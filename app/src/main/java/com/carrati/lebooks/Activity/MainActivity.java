@@ -44,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
         mainHello = findViewById(R.id.mainHello);
         mainSaldo = findViewById(R.id.mainSaldo);
 
-        preferences.cleanPreferences();
-        myBooksDAO.cleanBooks();
+        //preferences.cleanPreferences();
+        //myBooksDAO.cleanBooks();
     }
 
     protected void onStart() {
