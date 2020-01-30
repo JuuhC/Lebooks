@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Lebooks</string>
+    <string name="action_reload">Atualizar</string>
+    <string name="action_buy">Comprar Livros</string>
+    <string name="action_changename">Mudar Nome</string>
+    <string name="bookstore">Loja</string>
+    <string name="title">Titulo</string>
+    <string name="writer">Autor</string>
+    <string name="price">preço</string>
+    <string name="book_cover">Capa do livro</string>
+    <string name="loading">Carregando...</string>
+    <string name="real">R$ </string>
+    <string name="saldo">saldo</string>
+    <string name="buy">Comprar</string>
+    <string name="saldo_inicial">R$ 0</string>
+</resources>
