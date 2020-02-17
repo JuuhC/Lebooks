@@ -1,4 +1,4 @@
-package com.carrati.lebooks.Database
+package com.carrati.lebooks.DataRepository.Local
 
 import android.content.ContentValues
 import android.content.Context
@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import android.database.DatabaseUtils
 
-import com.carrati.lebooks.Model.Book
+import com.carrati.lebooks.Entities.Book
 
 import java.util.ArrayList
 

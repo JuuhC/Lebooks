@@ -1,4 +1,4 @@
-package com.carrati.lebooks.Config
+package com.carrati.lebooks.DataRepository.Local
 
 import android.content.Context
 import android.content.SharedPreferences

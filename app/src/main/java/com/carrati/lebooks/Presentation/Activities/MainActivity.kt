@@ -1,22 +1,22 @@
-package com.carrati.lebooks.Activity
+package com.carrati.lebooks.Presentation.Activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 
-import com.carrati.lebooks.Config.AdapterMyBooks
-import com.carrati.lebooks.Config.UserPreferences
-import com.carrati.lebooks.Database.MyBooksDAO
-import com.carrati.lebooks.Model.Book
+import com.carrati.lebooks.Presentation.Adapters.AdapterMyBooks
+import com.carrati.lebooks.DataRepository.Local.UserPreferences
+import com.carrati.lebooks.Entities.Book
+import com.carrati.lebooks.DataRepository.MyBooksRepository
 import com.carrati.lebooks.R
+import com.carrati.lebooks.databinding.ActivityMainBinding
+import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,16 +24,16 @@ class MainActivity : AppCompatActivity() {
     private var mainSaldo: TextView? = null
     private var adapter: AdapterMyBooks? = null
     private var booksList: MutableList<Book> = mutableListOf()
-    private lateinit var myBooksDAO: MyBooksDAO
+    //private lateinit var myBooksDAO: MyBooksDAO
     private var preferences: UserPreferences? = null
+    private val myBooksRepo: MyBooksRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val toolbar = findViewById<Toolbar>(R.id.mainToolbar)
-        setSupportActionBar(toolbar)
+        //setContentView(R.layout.activity_main)
+        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        myBooksDAO = MyBooksDAO(this)
+        //myBooksDAO = MyBooksDAO(this)
         preferences = UserPreferences(this)
 
         mainHello = findViewById(R.id.mainHello)
@@ -46,12 +46,26 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        mainSaldo?.text = resources.getString(R.string.real) + preferences?.saldo;
-        mainHello?.text = "Olá, " + preferences?.nome;
-        getMyBooks()
+        mainSaldo?.text = resources.getString(R.string.real) + preferences?.saldo
+        mainHello?.text = "Olá, " + preferences?.nome
+        //getMyBooks()
+        booksList = myBooksRepo.getMyBooks()
+
+        /*
+        1- tem que preencher o bookList antes de associar, se não o adapter perde a referencia
+        2- nao precisa notificar o adapter nesse caso pois ele já vai receber a lista preenchida
+         */
+        val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.myBooksList)
+
+        adapter = AdapterMyBooks(booksList)
+
+        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        recyclerView.layoutManager = layoutManager
+        recyclerView.setHasFixedSize(true)
+        recyclerView.adapter = adapter
     }
 
-    fun getMyBooks() {
+    /*fun getMyBooks() {
         booksList.clear()
         booksList = myBooksDAO.listarLivroComprado()
 
@@ -59,16 +73,15 @@ class MainActivity : AppCompatActivity() {
         1- tem que preencher o bookList antes de associar, se não o adapter perde a referencia
         2- nao precisa notificar o adapter nesse caso pois ele já vai receber a lista preenchida
          */
-
-        val recyclerView = findViewById<RecyclerView>(R.id.myBooksList)
+        val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.myBooksList)
 
         adapter = AdapterMyBooks(booksList)
 
-        val layoutManager = LinearLayoutManager(this)
+        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter
-    }
+    }*/
 
     //#### OK
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -91,9 +104,6 @@ class MainActivity : AppCompatActivity() {
             R.id.action_change_name ->
                 //chama popup de mudar nome
                 changeName()
-            R.id.action_update ->
-                //atualiza lista
-                getMyBooks()
         }//getMyBooks(); ##por algum motivo não precisou
 
         return super.onOptionsItemSelected(item)

@@ -1,6 +1,4 @@
-package com.carrati.lebooks.Config
-
-import android.view.View
+package com.carrati.lebooks.Presentation.Adapters
 
 interface IRecyclerViewBuyBookClickListener {
 

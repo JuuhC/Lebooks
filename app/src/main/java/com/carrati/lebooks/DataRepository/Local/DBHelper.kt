@@ -1,4 +1,4 @@
-package com.carrati.lebooks.Database
+package com.carrati.lebooks.DataRepository.Local
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -52,3 +52,4 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, NOME_DB, null, VERS
         var TABLE_FAVS = "favorite_conf"
     }
 }
+

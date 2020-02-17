@@ -1,31 +1,30 @@
-package com.carrati.lebooks.Activity
+package com.carrati.lebooks.Presentation.Activities
 
 import android.os.AsyncTask
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import com.carrati.lebooks.DataRepository.BookstoreRepository
 
-import com.carrati.lebooks.Config.AdapterBookstore
-import com.carrati.lebooks.Config.IRecyclerViewBuyBookClickListener
-import com.carrati.lebooks.Config.IRecyclerViewFavClickListener
-import com.carrati.lebooks.Config.UserPreferences
-import com.carrati.lebooks.Database.MyBooksDAO
-import com.carrati.lebooks.Model.Book
+import com.carrati.lebooks.Presentation.Adapters.AdapterBookstore
+import com.carrati.lebooks.Presentation.Adapters.IRecyclerViewBuyBookClickListener
+import com.carrati.lebooks.Presentation.Adapters.IRecyclerViewFavClickListener
+import com.carrati.lebooks.DataRepository.Local.UserPreferences
+import com.carrati.lebooks.Entities.Book
 import com.carrati.lebooks.R
 import com.squareup.picasso.Picasso
 
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import org.koin.android.ext.android.inject
 
 import java.io.BufferedReader
 import java.io.IOException
@@ -37,20 +36,13 @@ import java.util.ArrayList
 
 class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener, IRecyclerViewFavClickListener {
 
-    override fun onClickBuyBook(position: Int) {
-        buyBook(position)
-    }
-
-    override fun onClickFavBook(position: Int) {
-        favBook(position)
-    }
-
     private var bookstoreSaldo: TextView? = null
     private var adapter: AdapterBookstore? = null
     private val booksList = ArrayList<Book>()
-    private var recyclerView: RecyclerView? = null
-    private var myBooksDAO: MyBooksDAO? = null
+    private var recyclerView: androidx.recyclerview.widget.RecyclerView? = null
+    //private var myBooksDAO: MyBooksDAO? = null
     private var preferences: UserPreferences? = null
+    private val bookstoreRepo: BookstoreRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,9 +50,8 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener
         val toolbar = findViewById<Toolbar>(R.id.bookstoreToolbar)
         setSupportActionBar(toolbar)
 
-
-        myBooksDAO = MyBooksDAO(this)
-        preferences = UserPreferences(this)
+//      myBooksDAO = MyBooksDAO(this)
+//      preferences = UserPreferences(this)
 
         bookstoreSaldo = findViewById(R.id.bookstoreSaldo)
         recyclerView = findViewById(R.id.bookstoreList)
@@ -68,11 +59,10 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener
         //é aqui que é definido o que o botão comprar faz
         adapter = AdapterBookstore(booksList, this, this, this)
 
-        val layoutManager = LinearLayoutManager(this)
+        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         recyclerView?.layoutManager = layoutManager
         recyclerView?.setHasFixedSize(true)
         recyclerView?.adapter = adapter
-
     }
 
     override fun onStart() {
@@ -82,11 +72,33 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener
         //por algum motivo nao foi necessario notificar o adapter apos uma compra ser realizada...
     }
 
+    override fun onClickBuyBook(position: Int) {
+        buyBook(position)
+    }
+
+    override fun onClickFavBook(position: Int) {
+        favBook(position)
+    }
+
     fun getBookList() {
         //1- limpa a lista
         //2- executa a classe que vai pegar o json e preencher a lista
+        val pd: ProgressBar = findViewById(R.id.bookstoreProgressBar)
+        pd?.visibility = ProgressBar.VISIBLE
+
         booksList.clear()
-        JsonTask().execute("https://raw.githubusercontent.com/Felcks/desafio-mobile-lemobs/master/products.json")
+
+        booksList.addAll(bookstoreRepo.getBookListFromAPI()
+                .sortedWith(compareByDescending<Book> { it.fav }.thenBy { it.title }))
+        //getBookList()
+
+        if (pd?.visibility == ProgressBar.VISIBLE) {
+            pd?.visibility = ProgressBar.GONE
+        }
+
+        adapter?.notifyDataSetChanged()
+
+        //JsonTask().execute("https://raw.githubusercontent.com/Felcks/desafio-mobile-lemobs/master/products.json")
 
     }
 
@@ -111,7 +123,7 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener
             val result = saldo - price!!
             if (result >= 0) {
                 preferences?.saldo = result //String.format("%.0f", result)
-                myBooksDAO?.salvarLivroComprado(booksList[position])
+                //myBooksDAO?.salvarLivroComprado(booksList[position])
                 booksList.removeAt(position)
                 adapter?.notifyItemRemoved(position)
                 adapter?.notifyDataSetChanged()
@@ -138,7 +150,7 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener
 
             booksListRaw.clear()
 
-            myBooksDAO?.deletarLivroFavorito(booksList[position])
+            //myBooksDAO?.deletarLivroFavorito(booksList[position])
         } else {
             val livroFavoritado = booksList[position]
 
@@ -155,7 +167,7 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener
 
             booksListRaw.clear()
 
-            myBooksDAO?.salvarLivroFavorito(livroFavoritado)
+            //myBooksDAO?.salvarLivroFavorito(livroFavoritado)
         }
     }
 
@@ -185,7 +197,7 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener
     3- joga os objetos dentro da lista usada pelo recyclerView
     4- notifica o adapter para recarregar a lista
      */
-    private inner class JsonTask : AsyncTask<String, String, String>() {
+    /*private inner class JsonTask : AsyncTask<String, String, String>() {
         internal var pd: ProgressBar? = null
 
         override fun onPreExecute() { //exibe mensagem de carregando
@@ -287,5 +299,5 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener
             }
 
         }
-    }
+    }*/
 }

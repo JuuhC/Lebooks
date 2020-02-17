@@ -1,4 +1,4 @@
-package com.carrati.lebooks.Config
+package com.carrati.lebooks.Presentation.Adapters
 
 interface IRecyclerViewFavClickListener {
 

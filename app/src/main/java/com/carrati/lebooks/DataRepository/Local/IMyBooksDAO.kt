@@ -1,6 +1,6 @@
-package com.carrati.lebooks.Database
+package com.carrati.lebooks.DataRepository.Local
 
-import com.carrati.lebooks.Model.Book
+import com.carrati.lebooks.Entities.Book
 
 interface IMyBooksDAO {
     fun salvarLivroComprado(book: Book): Boolean

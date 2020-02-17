@@ -1,10 +1,4 @@
-package com.carrati.lebooks.Model
-
-import android.graphics.drawable.Drawable
-import android.util.Log
-
-import java.io.InputStream
-import java.net.URL
+package com.carrati.lebooks.Entities
 
 class Book {
 

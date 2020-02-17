@@ -1,25 +1,21 @@
-package com.carrati.lebooks.Config
+package com.carrati.lebooks.Presentation.Adapters
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.carrati.lebooks.Activity.MainActivity
 
-import com.carrati.lebooks.Model.Book
+import com.carrati.lebooks.Entities.Book
 import com.carrati.lebooks.R
 import com.squareup.picasso.Picasso
-
-import java.lang.ref.WeakReference
 
 //um adapter com listener para button
 class AdapterBookstore(private val books: List<Book>,
                        private val onClickListenerBuyBook: IRecyclerViewBuyBookClickListener,
                        private val onClickListenerFavBook: IRecyclerViewFavClickListener,
-                       private val context: Context) : RecyclerView.Adapter<AdapterBookstore.MyViewHolder>() {
+                       private val context: Context) : androidx.recyclerview.widget.RecyclerView.Adapter<AdapterBookstore.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemLista = LayoutInflater.from(parent.context).inflate(R.layout.adapter_bookstore, parent, false)
@@ -60,7 +56,7 @@ class AdapterBookstore(private val books: List<Book>,
         return books.size
     }
 
-    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    inner class MyViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView){
 
         //tirei o private mas deveria coloca outra coisa?
         //private val listenerRefBuyBook: WeakReference<IRecyclerViewBuyBookClickListener> = WeakReference(onClickListenerBuyBook)

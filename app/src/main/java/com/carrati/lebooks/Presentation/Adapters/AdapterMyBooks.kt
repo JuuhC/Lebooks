@@ -1,6 +1,5 @@
-package com.carrati.lebooks.Config
+package com.carrati.lebooks.Presentation.Adapters
 
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +7,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 
-import com.carrati.lebooks.Model.Book
+import com.carrati.lebooks.Entities.Book
 import com.carrati.lebooks.R
 import com.squareup.picasso.Picasso
 
 class AdapterMyBooks(private val books: List<Book>)//um adapter comum
-    : RecyclerView.Adapter<AdapterMyBooks.MyViewHolder>() {
+    : androidx.recyclerview.widget.RecyclerView.Adapter<AdapterMyBooks.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         Log.i("myBooksAdapter", "onCreate")
@@ -39,7 +38,7 @@ class AdapterMyBooks(private val books: List<Book>)//um adapter comum
     }
 
     //tirei o private do constructor mas não vai dar ruim?
-    inner class MyViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MyViewHolder constructor(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         /*internal var titulo: TextView
         internal var autor: TextView
