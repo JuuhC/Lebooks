@@ -2,7 +2,7 @@ package com.carrati.lebooks.data.old
 
 import android.util.Log
 import com.carrati.lebooks.data.old.db.MyBooksDAO
-import com.carrati.lebooks.data.remote.api.ServerAPI
+import com.carrati.lebooks.data.old.api.ServerAPI
 import com.carrati.lebooks.domain.entities.Book
 import org.json.JSONObject
 import java.util.ArrayList

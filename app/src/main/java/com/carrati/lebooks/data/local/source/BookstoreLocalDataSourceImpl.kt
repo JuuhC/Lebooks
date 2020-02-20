@@ -7,9 +7,19 @@ import io.reactivex.Single
 
 class BookstoreLocalDataSourceImpl(private val bookstoreDao: IBookstoreDAO): IBookstoreLocalDataSource {
 
-    override fun getBookstore(): Single<List<StoreBook>> {
+    override fun getBookList(): Single<List<StoreBook>> {
         return bookstoreDao.getBookstore()
                 .map { BookstoreLocalMapper.mapFromDB(it) }
+    }
+
+    override fun buyBook(book: StoreBook) {
+        val list = mutableListOf<StoreBook>()
+        list.add(book)
+        bookstoreDao.deleteBooks(BookstoreLocalMapper.mapToDB(list))
+    }
+
+    override fun favBook(book: StoreBook) {
+        bookstoreDao.favBook(BookstoreLocalMapper.mapToDB(book))
     }
 
     override fun insertData(list: List<StoreBook>) {

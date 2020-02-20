@@ -6,7 +6,7 @@ import com.carrati.lebooks.domain.entities.StoreBook
 
 object BookstoreLocalMapper {
 
-    //map from cache model to ui model
+    //map list from cache model to ui model
     fun mapFromDB(data: List<StoreBookLocal>) = data.map { mapToDomain(it) }
 
     private fun mapToDomain(data: StoreBookLocal) = StoreBook(
@@ -17,7 +17,7 @@ object BookstoreLocalMapper {
             favor = data.favor
     )
 
-    //map from ui to cache
+    //map list from ui to cache
     fun mapToDB(jobs: List<StoreBook>) = jobs.map { mapFromDomain(it) }
 
     private fun mapFromDomain(data: StoreBook) = StoreBookLocal(
@@ -27,4 +27,8 @@ object BookstoreLocalMapper {
             price = data.price,
             favor = data.favor
     )
+
+    fun mapFromDB(data: StoreBookLocal) = mapToDomain(data)
+
+    fun mapToDB(data: StoreBook) = mapFromDomain(data)
 }

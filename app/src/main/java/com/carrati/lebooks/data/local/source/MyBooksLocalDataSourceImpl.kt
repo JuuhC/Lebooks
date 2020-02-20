@@ -10,11 +10,15 @@ class MyBooksLocalDataSourceImpl(private val myBooksDao: IMyBooksDAO): IMyBooksL
         return myBooksDao.getMyBooks().map{ MyBooksLocalMapper.mapFromDB( it ) }
     }
 
-    override fun insertData(list: List<MyBook>) {
+    override fun insertAllData(list: List<MyBook>) {
         myBooksDao.insertAll( MyBooksLocalMapper.mapToDB( list ))
     }
 
-    override fun updateData(list: List<MyBook>) {
+    override fun updateListedData(list: List<MyBook>) {
         myBooksDao.updateData( MyBooksLocalMapper.mapToDB( list ))
+    }
+
+    override fun addPurchasedBook(book: MyBook) {
+        myBooksDao.insertOne( MyBooksLocalMapper.mapToDB(book) )
     }
 }

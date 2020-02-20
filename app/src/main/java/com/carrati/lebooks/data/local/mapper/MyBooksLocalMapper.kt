@@ -23,4 +23,8 @@ object MyBooksLocalMapper {
             thumb_url = data.thumbURL
 
     )
+
+    fun mapFromDB(data: MyBookLocal) = mapToDomain(data)
+
+    fun mapToDB(data: MyBook) = mapFromDomain(data)
 }

@@ -1,10 +1,6 @@
 package com.carrati.lebooks.data.local.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Transaction
-import androidx.room.OnConflictStrategy
+import androidx.room.*
 import com.carrati.lebooks.data.local.model.StoreBookLocal
 import io.reactivex.Single
 
@@ -12,12 +8,12 @@ import io.reactivex.Single
 interface IBookstoreDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(storeBook: List<StoreBookLocal>)
+    fun insertAll(books: List<StoreBookLocal>)
 
     @Transaction
-    fun updateData(storeBook: List<StoreBookLocal>) {
+    fun updateData(books: List<StoreBookLocal>) {
         deleteAll()
-        insertAll(storeBook)
+        insertAll(books)
     }
 
     @Query("DELETE FROM bookstore_conf")
@@ -25,4 +21,13 @@ interface IBookstoreDAO {
 
     @Query("SELECT * FROM bookstore_conf")
     fun getBookstore(): Single<List<StoreBookLocal>>
+
+    @Delete
+    fun deleteBooks(books: List<StoreBookLocal>)
+
+    @Query("SELECT * FROM bookstore_conf WHERE title = :title AND writer = :writer")
+    fun searchBook(title: String, writer: String)
+
+    @Update
+    fun favBook(book: StoreBookLocal)
 }

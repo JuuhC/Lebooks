@@ -5,7 +5,8 @@ import com.carrati.lebooks.domain.entities.MyBook
 
 interface IMyBooksLocalDataSource {
     fun getMyBooks(): Single<List<MyBook>>
+    fun addPurchasedBook(book: MyBook)
 
-    fun insertData(list: List<MyBook>)
-    fun updateData(list: List<MyBook>)
+    fun insertAllData(list: List<MyBook>)
+    fun updateListedData(list: List<MyBook>)
 }

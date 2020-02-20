@@ -5,4 +5,6 @@ import io.reactivex.Single
 
 interface IBookstoreRepository {
     fun getBooks(forceUpdate: Boolean): Single<List<StoreBook>>
+    fun favorBook(book: StoreBook): Single<Boolean>
+    fun buyBook(book: StoreBook): Single<Boolean>
 }

@@ -9,4 +9,8 @@ class MyBooksRepositoryImpl(private val localDataSource: IMyBooksLocalDataSource
     override fun getBooks(): Single<List<MyBook>> {
         return localDataSource.getMyBooks()
     }
+
+    override fun addPurchasedBook(book: MyBook) {
+        return localDataSource.addPurchasedBook(book)
+    }
 }

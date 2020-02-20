@@ -15,7 +15,7 @@ class BookstoreRepositoryImpl(
         return if (forceUpdate)
             getBooksRemote(forceUpdate)
         else
-            localDataSource.getBookstore().flatMap{ listBooks ->
+            localDataSource.getBookList().flatMap{ listBooks ->
                         when {
                             listBooks.isEmpty() -> getBooksRemote(false)
                             else -> Single.just(listBooks)
@@ -31,5 +31,15 @@ class BookstoreRepositoryImpl(
                 localDataSource.insertData( listBooks )
             Single.just( listBooks )
         }
+    }
+
+    override fun buyBook(book: StoreBook): Single<Boolean> {
+        localDataSource.favBook(book)
+        return Single.just(true)
+    }
+
+    override fun favorBook(book: StoreBook): Single<Boolean> {
+        localDataSource.favBook(book)
+        return Single.just(true)
     }
 }

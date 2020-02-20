@@ -1,6 +1,6 @@
 package com.carrati.lebooks.data.di
 
-import com.carrati.lebooks.data.remote.api.ServerAPI
+import com.carrati.lebooks.data.old.api.ServerAPI
 import com.carrati.lebooks.R
 import com.carrati.lebooks.data.remote.source.BookstoreRemoteDataSourceImpl
 import com.carrati.lebooks.data.remote.source.IBookstoreRemoteDataSource

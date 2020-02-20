@@ -5,4 +5,5 @@ import io.reactivex.Single
 
 interface IMyBooksRepository {
     fun getBooks(): Single<List<MyBook>>
+    fun addPurchasedBook(book: MyBook)
 }
