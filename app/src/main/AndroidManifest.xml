@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.carrati.lebooks.Presentation.Activities.MainActivity"
+            android:name="com.carrati.lebooks.presentation.activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.carrati.lebooks.Presentation.Activities.BookstoreActivity"
+            android:name="com.carrati.lebooks.presentation.activities.BookstoreActivity"
             android:label="@string/bookstore"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>

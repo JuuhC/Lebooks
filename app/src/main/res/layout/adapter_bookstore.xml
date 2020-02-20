@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:elevation="3dp"
-    tools:context=".Presentation.Activities.BookstoreActivity">
+    tools:context=".presentation.activities.BookstoreActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

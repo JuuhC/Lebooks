@@ -1,7 +1,7 @@
 package com.carrati.lebooks
 
 import android.app.Application
-import com.carrati.lebooks.DI.modulesList
+import com.carrati.lebooks.di.modulesList
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
