@@ -3,24 +3,36 @@ package com.carrati.lebooks.presentation.viewmodels
 import androidx.lifecycle.MutableLiveData
 import com.carrati.lebooks.domain.entities.StoreBook
 import com.carrati.lebooks.domain.usecases.BuyStoreBookUseCase
+import com.carrati.lebooks.domain.usecases.DisplayBalanceUseCase
 import com.carrati.lebooks.domain.usecases.FavorStoreBookUseCase
 import com.carrati.lebooks.domain.usecases.GetStoreBooksUseCase
 import io.reactivex.Scheduler
 import io.reactivex.rxkotlin.plusAssign
+import java.text.NumberFormat
+import java.util.*
 
 class BookstoreViewModel(
         val buyStoreBookUC: BuyStoreBookUseCase,
         val favorStoreBookUC: FavorStoreBookUseCase,
         val getStoreBooksUC: GetStoreBooksUseCase,
+        val displayBalanceUC: DisplayBalanceUseCase,
         val uiScheduler: Scheduler
 ) : BaseViewModel() {
 
-    val stateList = MutableLiveData<ViewState<List<StoreBook>>>().apply {
+    val stateGetStoreBooks = MutableLiveData<ViewState<List<StoreBook>>>().apply {
         value = ViewState.Loading
     }
 
-    val stateBoolean = MutableLiveData<ViewState<Boolean>>().apply {
+    val stateFavorStoreBook = MutableLiveData<ViewState<Boolean>>().apply {
         value = ViewState.Loading
+    }
+
+    val stateBuyStoreBook = MutableLiveData<ViewState<Int>>().apply {
+        value = ViewState.Loading
+    }
+
+    val stateDisplayBalance = MutableLiveData<String>().apply {
+        value = "R$ 100"
     }
 
     fun getStoreBooks(forceUpdate: Boolean = false){
@@ -29,7 +41,7 @@ class BookstoreViewModel(
                 .observeOn(uiScheduler)
                 .subscribe(
                         {
-                            stateList.postValue(it)
+                            stateGetStoreBooks.postValue(it)
                         },
                         {
                         }
@@ -46,7 +58,7 @@ class BookstoreViewModel(
                 .observeOn(uiScheduler)
                 .subscribe(
                         {
-                            stateBoolean.postValue(it)
+                            stateFavorStoreBook.postValue(it)
                         },
                         {
                         }
@@ -59,9 +71,28 @@ class BookstoreViewModel(
                 .observeOn(uiScheduler)
                 .subscribe(
                         {
-                            stateBoolean.postValue(it)
+                            stateBuyStoreBook.postValue(it)
                         },
                         {
+                        }
+                )
+    }
+
+    fun displayBalance(){
+
+        var balance: String? = null
+
+        disposables += displayBalanceUC.execute()
+                .compose(StateMachineSingle())
+                .observeOn(uiScheduler)
+                .subscribe(
+                        {
+                            val formatedBalance = NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(it)
+                            balance = formatedBalance
+                            stateDisplayBalance.postValue(formatedBalance)
+                        },
+                        {
+                            stateDisplayBalance.postValue("Erro ao exibir saldo")
                         }
                 )
     }

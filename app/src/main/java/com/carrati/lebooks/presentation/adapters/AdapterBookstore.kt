@@ -6,16 +6,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.RecyclerView
 
-import com.carrati.lebooks.domain.entities.Book
 import com.carrati.lebooks.R
+import com.carrati.lebooks.databinding.AdapterBookstoreBinding
+import com.carrati.lebooks.domain.entities.StoreBook
 import com.squareup.picasso.Picasso
 
 //um adapter com listener para button
-class AdapterBookstore(private val books: List<Book>,
-                       private val onClickListenerBuyBook: IRecyclerViewBuyBookClickListener,
-                       private val onClickListenerFavBook: IRecyclerViewFavClickListener,
-                       private val context: Context) : androidx.recyclerview.widget.RecyclerView.Adapter<AdapterBookstore.MyViewHolder>() {
+class AdapterBookstore(private val books: ArrayList<StoreBook>,
+                       private val onClickListenerRV: IRecyclerViewClickListener,
+                       private val context: Context
+) : RecyclerView.Adapter<AdapterBookstore.MyViewHolder>() {
+
+    /*override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val itemLista: AdapterBookstoreBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context), R.layout.adapter_bookstore, parent, false)
+        return MyViewHolder(itemLista)
+    }*/
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemLista = LayoutInflater.from(parent.context).inflate(R.layout.adapter_bookstore, parent, false)
@@ -32,22 +41,29 @@ class AdapterBookstore(private val books: List<Book>,
         holder.valor.text = "R$ " + book.price.toString()
 
         holder.comprar.setOnClickListener {
-            onClickListenerBuyBook.onClickBuyBook(position)
+            val bookPurchased: Boolean = onClickListenerRV.onClickBuyBook(book)
+            if(bookPurchased) {
+                books.remove(book)
+                notifyDataSetChanged()
+            }
         }
 
         holder.favorito.setOnClickListener {
-            onClickListenerFavBook.onClickFavBook(position)
-            notifyDataSetChanged()
-            /*if(book.fav)
-                holder.favorito.setImageDrawable(ContextCompat.getDrawable(context, android.R.drawable.btn_star_big_on))
-            else
-                holder.favorito.setImageDrawable(ContextCompat.getDrawable(context, android.R.drawable.btn_star_big_off))*/
+            val bookFavorited: Boolean = onClickListenerRV.onClickFavBook(book)
+
+            if(bookFavorited) {
+                book.favor = if (book.favor) false else true  //cristo
+                books.sortWith(compareBy({ it.favor }, { it.title }))
+                notifyDataSetChanged()
+            }
         }
 
-        if(book.fav)
-            holder.favorito.setImageDrawable(ContextCompat.getDrawable(context, android.R.drawable.btn_star_big_on))
+        if(book.favor)
+            holder.favorito.setImageDrawable(
+                    ContextCompat.getDrawable(context, android.R.drawable.btn_star_big_on))
         else
-            holder.favorito.setImageDrawable(ContextCompat.getDrawable(context, android.R.drawable.btn_star_big_off))
+            holder.favorito.setImageDrawable(
+                    ContextCompat.getDrawable(context, android.R.drawable.btn_star_big_off))
 
     }
 
@@ -56,7 +72,7 @@ class AdapterBookstore(private val books: List<Book>,
         return books.size
     }
 
-    inner class MyViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView){
+    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
         //tirei o private mas deveria coloca outra coisa?
         //private val listenerRefBuyBook: WeakReference<IRecyclerViewBuyBookClickListener> = WeakReference(onClickListenerBuyBook)

@@ -16,7 +16,9 @@ class BuyStoreBookUseCase(
         private val scheduler: Scheduler
 ) {
 
-    fun execute(book: StoreBook): Single<Boolean> {
+    fun execute(book: StoreBook): Single<Int> {
+        //2-adiciona no banco
+        //3-subtrai do saldo
         val bookPrice: Int = book.price
         val result: Int = userPrefs.saldo - bookPrice
 
@@ -24,9 +26,9 @@ class BuyStoreBookUseCase(
             bookstoreRepo.buyBook(book)
             myBooksRepo.addPurchasedBook( mapper.storeToMyBook( book ))
             userPrefs.saldo = result
-            return Single.just(true).subscribeOn(scheduler)
+            return Single.just(result).subscribeOn(scheduler)
         } else {
-            return Single.just(false).subscribeOn(scheduler)
+            return Single.just(result).subscribeOn(scheduler)
         }
     }
 

@@ -3,162 +3,116 @@ package com.carrati.lebooks.presentation.activities
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import com.carrati.lebooks.data.old.BookstoreRepository
-
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.carrati.lebooks.presentation.adapters.AdapterBookstore
-import com.carrati.lebooks.presentation.adapters.IRecyclerViewBuyBookClickListener
-import com.carrati.lebooks.presentation.adapters.IRecyclerViewFavClickListener
-import com.carrati.lebooks.data.UserPreferences
-import com.carrati.lebooks.domain.entities.Book
+import com.carrati.lebooks.domain.entities.StoreBook
 import com.carrati.lebooks.R
+import com.carrati.lebooks.databinding.ActivityBookstoreBinding
+import com.carrati.lebooks.presentation.adapters.IRecyclerViewClickListener
+import com.carrati.lebooks.presentation.viewmodels.BookstoreViewModel
+import com.carrati.lebooks.presentation.viewmodels.ViewState
 import com.squareup.picasso.Picasso
-
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 import java.util.ArrayList
 
-class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener, IRecyclerViewFavClickListener {
+class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
 
-    private var bookstoreSaldo: TextView? = null
-    private var adapter: AdapterBookstore? = null
-    private val booksList = ArrayList<Book>()
-    private var recyclerView: androidx.recyclerview.widget.RecyclerView? = null
-    //private var myBooksDAO: MyBooksDAO? = null
-    private var preferences: UserPreferences? = null
-    private val bookstoreRepo: BookstoreRepository by inject()
+    private val booksList = ArrayList<StoreBook>()
+
+    private val viewModel: BookstoreViewModel by viewModel()
+    private val adapter: AdapterBookstore = AdapterBookstore(booksList, this, this)
+
+    private lateinit var binding: ActivityBookstoreBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_bookstore)
-        val toolbar = findViewById<Toolbar>(R.id.bookstoreToolbar)
-        setSupportActionBar(toolbar)
 
-//      myBooksDAO = MyBooksDAO(this)
-//      preferences = UserPreferences(this)
-
-        bookstoreSaldo = findViewById(R.id.bookstoreSaldo)
-        recyclerView = findViewById(R.id.bookstoreList)
-
-        //é aqui que é definido o que o botão comprar faz
-        adapter = AdapterBookstore(booksList, this, this, this)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_bookstore)
+        setSupportActionBar(binding.bookstoreToolbar)
+        binding.bookstoreToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material)
+        binding.bookstoreToolbar.setNavigationOnClickListener { finish() }
 
         val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        recyclerView?.layoutManager = layoutManager
-        recyclerView?.setHasFixedSize(true)
-        recyclerView?.adapter = adapter
+        binding.bookstoreList.layoutManager = layoutManager
+        binding.bookstoreList.setHasFixedSize(true)
+        binding.bookstoreList.adapter = adapter
     }
 
     override fun onStart() {
         super.onStart()
-        bookstoreSaldo?.text = resources.getString(R.string.real) + preferences?.saldo
-        getBookList()
-        //por algum motivo nao foi necessario notificar o adapter apos uma compra ser realizada...
+        getBookList(false)
     }
 
-    override fun onClickBuyBook(position: Int) {
-        buyBook(position)
-    }
-
-    override fun onClickFavBook(position: Int) {
-        favBook(position)
-    }
-
-    fun getBookList() {
+    fun getBookList(forceUpdate: Boolean) {
         //1- limpa a lista
         //2- executa a classe que vai pegar o json e preencher a lista
-        val pd: ProgressBar = findViewById(R.id.bookstoreProgressBar)
-        pd?.visibility = ProgressBar.VISIBLE
 
-        booksList.clear()
+        viewModel.getStoreBooks(forceUpdate)
 
-        booksList.addAll(bookstoreRepo.getBookListFromAPI()
-                .sortedWith(compareByDescending<Book> { it.fav }.thenBy { it.title }))
-        //getBookList()
-
-        if (pd?.visibility == ProgressBar.VISIBLE) {
-            pd?.visibility = ProgressBar.GONE
-        }
-
-        adapter?.notifyDataSetChanged()
-
-        //JsonTask().execute("https://raw.githubusercontent.com/Felcks/desafio-mobile-lemobs/master/products.json")
-
-    }
-
-    fun buyBook(position: Int) {
-        //1-remove da lista da loja
-        //2-adiciona no banco
-        //3-subtrai do saldo
-
-        val bookThumb = ImageView(this@BookstoreActivity)
-        Picasso.get().load(booksList[position].thumbURL).into(bookThumb)
-
-        val builder = AlertDialog.Builder(this@BookstoreActivity)
-        builder.setTitle("Deseja comprar este livro?").setMessage(booksList[position].title
-                + "\n" + booksList[position].writer + "\n\n")
-        builder.setView(bookThumb)
-
-        //help - como faz pra transformar string em float tratando null
-        builder.setPositiveButton("OK") { _, _ ->
-            val saldo = preferences?.saldo ?: -1
-            val price = booksList[position].price
-
-            val result = saldo - price!!
-            if (result >= 0) {
-                preferences?.saldo = result //String.format("%.0f", result)
-                //myBooksDAO?.salvarLivroComprado(booksList[position])
-                booksList.removeAt(position)
-                adapter?.notifyItemRemoved(position)
-                adapter?.notifyDataSetChanged()
-                bookstoreSaldo?.text = String.format("R$ ${result}")
-                Toast.makeText(this@BookstoreActivity, "Compra efetuada!", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(this@BookstoreActivity, "Saldo insuficiente", Toast.LENGTH_LONG).show()
+        viewModel.stateGetStoreBooks.observe(this, Observer { state ->
+            when(state) {
+                is ViewState.Success -> {
+                    booksList.clear()
+                    booksList.addAll(state.data
+                            .sortedWith(compareByDescending<StoreBook> { it.favor }.thenBy { it.title }))
+                    adapter.notifyDataSetChanged()
+                    binding.bookstoreProgressBar.visibility = ProgressBar.GONE
+                }
+                is ViewState.Loading ->
+                    binding.bookstoreProgressBar.visibility = ProgressBar.VISIBLE
+                is ViewState.Failed ->
+                    Toast.makeText(this@BookstoreActivity, "Erro ao carregar loja", Toast.LENGTH_LONG).show()
             }
-        }
-        builder.setNegativeButton("Cancelar") { _, _ -> }
-
-        builder.create().show()
+        })
     }
 
-    fun favBook(position: Int){
-        if(booksList[position].fav){
-            booksList[position].unsetFav()
+    override fun onClickBuyBook(book: StoreBook): Boolean {
+        viewModel.buyStoreBook(book)
+        var result: Boolean = false
 
-            val booksListRaw = ArrayList<Book>()
-            booksListRaw.addAll(booksList)
+        viewModel.stateBuyStoreBook.observe(this, Observer { state ->
+            when(state) {
+                is ViewState.Success -> {
+                    Toast.makeText(this@BookstoreActivity, "Sucesso ao comprar livro", Toast.LENGTH_LONG).show()
+                    result = true
+                }
+                is ViewState.Loading ->
+                    Toast.makeText(this@BookstoreActivity, "Processando solicitação", Toast.LENGTH_SHORT).show()
+                is ViewState.Failed -> {
+                    Toast.makeText(this@BookstoreActivity, "Erro ao comprar livro", Toast.LENGTH_LONG).show()
+                    result = false
+                }
+            }
+        })
+        return result
+    }
 
-            booksList.clear()
-            booksList.addAll(booksListRaw.sortedWith(compareByDescending<Book> { it.fav }.thenBy { it.title }))
+    override fun onClickFavBook(book: StoreBook): Boolean {
+        viewModel.favorStoreBook(book)
+        var result: Boolean = false
 
-            booksListRaw.clear()
-
-            //myBooksDAO?.deletarLivroFavorito(booksList[position])
-        } else {
-            val livroFavoritado = booksList[position]
-
-            livroFavoritado.setFav()
-
-            //booksList.remove(livroFavoritado)
-            //booksList.add(0, livroFavoritado)
-
-            val booksListRaw = ArrayList<Book>()
-            booksListRaw.addAll(booksList)
-
-            booksList.clear()
-            booksList.addAll(booksListRaw.sortedWith(compareByDescending<Book> { it.fav }.thenBy { it.title }))
-
-            booksListRaw.clear()
-
-            //myBooksDAO?.salvarLivroFavorito(livroFavoritado)
-        }
+        viewModel.stateFavorStoreBook.observe(this, Observer { state ->
+            when(state) {
+                is ViewState.Success -> {
+                    result = true
+                }
+                is ViewState.Loading ->
+                    Toast.makeText(this@BookstoreActivity, "Processando solicitação", Toast.LENGTH_SHORT).show()
+                is ViewState.Failed -> {
+                    result = false
+                }
+            }
+        })
+        return result
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -173,9 +127,8 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewBuyBookClickListener
         // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
 
-
         if (id == R.id.action_reload) {
-            getBookList()
+            getBookList(true)
         }
 
         return super.onOptionsItemSelected(item)
