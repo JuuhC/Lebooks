@@ -31,10 +31,6 @@ class BookstoreViewModel(
         value = ViewState.Loading
     }
 
-    val stateDisplayBalance = MutableLiveData<String>().apply {
-        value = "R$ 100"
-    }
-
     fun getStoreBooks(forceUpdate: Boolean = false){
         disposables += getStoreBooksUC.execute(forceUpdate = forceUpdate)
                 .compose(StateMachineSingle())
@@ -78,22 +74,11 @@ class BookstoreViewModel(
                 )
     }
 
-    fun displayBalance(){
+    fun displayBalance(): String{
 
-        var balance: String? = null
+        var balance = displayBalanceUC.execute()
+        val formatedBalance = NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(balance)
 
-        disposables += displayBalanceUC.execute()
-                .compose(StateMachineSingle())
-                .observeOn(uiScheduler)
-                .subscribe(
-                        {
-                            val formatedBalance = NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(it)
-                            balance = formatedBalance
-                            stateDisplayBalance.postValue(formatedBalance)
-                        },
-                        {
-                            stateDisplayBalance.postValue("Erro ao exibir saldo")
-                        }
-                )
+        return formatedBalance
     }
 }

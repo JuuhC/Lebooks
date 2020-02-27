@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 
-import com.carrati.lebooks.domain.entities.Book
 import com.carrati.lebooks.R
+import com.carrati.lebooks.domain.entities.MyBook
 import com.squareup.picasso.Picasso
 
-class AdapterMyBooks(private val books: List<Book>)//um adapter comum
+class AdapterMyBooks(private val books: MutableList<MyBook>)//um adapter comum
     : androidx.recyclerview.widget.RecyclerView.Adapter<AdapterMyBooks.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {

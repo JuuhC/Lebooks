@@ -4,11 +4,11 @@ import com.carrati.lebooks.data.UserPreferences
 import io.reactivex.Scheduler
 import io.reactivex.Single
 
-class DisplayBalanceUseCase(
+class DisplayNameUseCase(
         private val userPrefs: UserPreferences
 ) {
 
-    fun execute(): Int {
-        return userPrefs.saldo
+    fun execute(): String {
+        return userPrefs.nome
     }
 }

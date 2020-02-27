@@ -7,37 +7,39 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 
 import com.carrati.lebooks.presentation.adapters.AdapterMyBooks
-import com.carrati.lebooks.data.UserPreferences
-import com.carrati.lebooks.domain.entities.Book
-import com.carrati.lebooks.data.old.MyBooksRepository
 import com.carrati.lebooks.R
 import com.carrati.lebooks.databinding.ActivityMainBinding
+import com.carrati.lebooks.domain.entities.MyBook
+import com.carrati.lebooks.presentation.viewmodels.MyBooksViewModel
+import com.carrati.lebooks.presentation.viewmodels.ViewState
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private var mainHello: TextView? = null
-    private var mainSaldo: TextView? = null
-    private var adapter: AdapterMyBooks? = null
-    private var booksList: MutableList<Book> = mutableListOf()
-    //private lateinit var myBooksDAO: MyBooksDAO
-    private var preferences: UserPreferences? = null
-    private val myBooksRepo: MyBooksRepository by inject()
+    private val booksList: MutableList<MyBook> = mutableListOf()
+
+    private val viewModel: MyBooksViewModel by viewModel()
+    private val adapter: AdapterMyBooks = AdapterMyBooks(booksList)
+
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_main)
-        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        setSupportActionBar(binding.mainToolbar)
 
-        //myBooksDAO = MyBooksDAO(this)
-        preferences = UserPreferences(this)
-
-        mainHello = findViewById(R.id.mainHello)
-        mainSaldo = findViewById(R.id.mainSaldo)
+        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        binding.myBooksList.layoutManager = layoutManager
+        binding.myBooksList.setHasFixedSize(true)
+        binding.myBooksList.adapter = adapter
 
         //preferences?.cleanPreferences();
         //myBooksDAO.cleanAllBooks();
@@ -45,43 +47,49 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
-        mainSaldo?.text = resources.getString(R.string.real) + preferences?.saldo
-        mainHello?.text = "Olá, " + preferences?.nome
-        //getMyBooks()
-        booksList = myBooksRepo.getMyBooks()
-
-        /*
-        1- tem que preencher o bookList antes de associar, se não o adapter perde a referencia
-        2- nao precisa notificar o adapter nesse caso pois ele já vai receber a lista preenchida
-         */
-        val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.myBooksList)
-
-        adapter = AdapterMyBooks(booksList)
-
-        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.setHasFixedSize(true)
-        recyclerView.adapter = adapter
+        getBookList()
     }
 
-    /*fun getMyBooks() {
-        booksList.clear()
-        booksList = myBooksDAO.listarLivroComprado()
+    fun getBookList() {
+        //1- limpa a lista
+        //2- executa a classe que vai pegar do banco e preenche a lista
 
-        /*
-        1- tem que preencher o bookList antes de associar, se não o adapter perde a referencia
-        2- nao precisa notificar o adapter nesse caso pois ele já vai receber a lista preenchida
-         */
-        val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.myBooksList)
+        viewModel.getMyBooks()
 
-        adapter = AdapterMyBooks(booksList)
+        viewModel.stateGetMyBooks.observe(this, Observer { state ->
+            when(state) {
+                is ViewState.Success -> {
+                    booksList.clear()
+                    booksList.addAll(state.data
+                            .sortedWith(compareByDescending { it.title }))
+                    adapter.notifyDataSetChanged()
+                    binding.mainProgressBar.visibility = ProgressBar.GONE
+                }
+                is ViewState.Loading ->
+                    binding.mainProgressBar.visibility = ProgressBar.VISIBLE
+                is ViewState.Failed ->
+                    Toast.makeText(this@MainActivity, "Erro ao carregar livros", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
 
-        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.setHasFixedSize(true)
-        recyclerView.adapter = adapter
-    }*/
+    //#### OK
+    fun changeName() { //cria uma janelinha pro usuario inserir o novo nome
+        val newName = EditText(this@MainActivity)
+        newName.setPadding(30, 20, 30, 20)
+        val alertDialog = AlertDialog.Builder(this@MainActivity)
+        alertDialog.setTitle("Mudar Nome")
+        alertDialog.setMessage("Insira novo nome de usuário:")
+        alertDialog.setCancelable(true)
+        alertDialog.setView(newName)
+
+        alertDialog.setPositiveButton("OK") { _, _ ->
+            //atualiza o shared preferences e a mainHello
+            viewModel.changeUserName(newName.text.toString())
+        }
+
+        alertDialog.show()
+    }
 
     //#### OK
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -107,24 +115,5 @@ class MainActivity : AppCompatActivity() {
         }//getMyBooks(); ##por algum motivo não precisou
 
         return super.onOptionsItemSelected(item)
-    }
-
-    //#### OK
-    fun changeName() { //cria uma janelinha pro usuario inserir o novo nome
-        val newName = EditText(this@MainActivity)
-        newName.setPadding(30, 20, 30, 20)
-        val alertDialog = AlertDialog.Builder(this@MainActivity)
-        alertDialog.setTitle("Mudar Nome")
-        alertDialog.setMessage("Insira novo nome de usuário:")
-        alertDialog.setCancelable(true)
-        alertDialog.setView(newName)
-
-        alertDialog.setPositiveButton("OK") { _, _ ->
-            //atualiza o shared preferences e a mainHello
-            mainHello?.text = "Olá, " + newName.text
-            preferences?.nome = newName.text.toString()
-        }
-
-        alertDialog.show()
     }
 }

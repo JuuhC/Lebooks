@@ -26,7 +26,7 @@ import java.util.ArrayList
 
 class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
 
-    private val booksList = ArrayList<StoreBook>()
+    private val booksList: MutableList<StoreBook> = mutableListOf()
 
     private val viewModel: BookstoreViewModel by viewModel()
     private val adapter: AdapterBookstore = AdapterBookstore(booksList, this, this)

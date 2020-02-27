@@ -15,7 +15,7 @@ import com.carrati.lebooks.domain.entities.StoreBook
 import com.squareup.picasso.Picasso
 
 //um adapter com listener para button
-class AdapterBookstore(private val books: ArrayList<StoreBook>,
+class AdapterBookstore(private val books: MutableList<StoreBook>,
                        private val onClickListenerRV: IRecyclerViewClickListener,
                        private val context: Context
 ) : RecyclerView.Adapter<AdapterBookstore.MyViewHolder>() {

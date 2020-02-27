@@ -2,6 +2,7 @@ package com.carrati.lebooks.data.di
 
 import com.carrati.lebooks.data.BookstoreRepositoryImpl
 import com.carrati.lebooks.data.MyBooksRepositoryImpl
+import com.carrati.lebooks.data.UserPreferences
 import com.carrati.lebooks.domain.repository.IBookstoreRepository
 import com.carrati.lebooks.domain.repository.IMyBooksRepository
 import org.koin.dsl.module
@@ -17,6 +18,11 @@ val repositoryModule = module {
         MyBooksRepositoryImpl(
                 localDataSource = get()
         )
+    }
+    factory {
+       UserPreferences(
+               context = get()
+       )
     }
 }
 
