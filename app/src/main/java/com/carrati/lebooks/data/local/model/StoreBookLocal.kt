@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "bookstore_conf")
-class StoreBookLocal(
+data class StoreBookLocal(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     var title: String = "",

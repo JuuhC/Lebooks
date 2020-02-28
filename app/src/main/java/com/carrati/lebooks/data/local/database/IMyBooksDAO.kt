@@ -8,16 +8,16 @@ import io.reactivex.Single
 interface IMyBooksDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(mybooks: List<MyBookLocal>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertOne(mybooks: MyBookLocal)
+    fun insertOne(book: MyBookLocal)
 
     @Transaction
-    fun updateData(mybooks: List<MyBookLocal>) {
+    fun updateData(books: List<MyBookLocal>) {
         deleteAll()
-        insertAll(mybooks)
+        insertAll(books)
     }
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(books: List<MyBookLocal>)
 
     @Query("DELETE FROM mybooks_conf")
     fun deleteAll()

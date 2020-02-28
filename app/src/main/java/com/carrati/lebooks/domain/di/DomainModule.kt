@@ -14,30 +14,42 @@ val useCaseModule = module {
                 mapper = get(),
                 scheduler = Schedulers.io()
         )
+    }
 
+    factory {
         ChangeNameUseCase(
                 userPrefs = get(),
                 scheduler = Schedulers.io()
         )
+    }
 
+    factory {
         DisplayBalanceUseCase(
                 userPrefs = get()
         )
+    }
 
+    factory {
         DisplayNameUseCase(
                 userPrefs = get()
         )
+    }
 
+    factory {
         FavorStoreBookUseCase(
                 repository = get(),
                 scheduler = Schedulers.io()
         )
+    }
 
+    factory {
         GetMyBooksUseCase(
                 repository = get(),
                 scheduler = Schedulers.io()
         )
+    }
 
+    factory {
         GetStoreBooksUseCase(
                 repository = get(),
                 scheduler = Schedulers.io()

@@ -1,6 +1,6 @@
 package com.carrati.lebooks.data.di
 
-import com.carrati.lebooks.data.old.api.ServerAPI
+import com.carrati.lebooks.data.remote.api.IServerAPI
 import com.carrati.lebooks.R
 import com.carrati.lebooks.data.remote.source.BookstoreRemoteDataSourceImpl
 import com.carrati.lebooks.data.remote.source.IBookstoreRemoteDataSource
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 val remoteDataModule = module {
     factory { providesOkHttpClient() }
-    single { createWebService<ServerAPI>(
+    single { createWebService<IServerAPI>(
             okHttpClient = get(),
             url =  androidContext().getString(R.string.base_url)
     ) }

@@ -1,5 +1,6 @@
 package com.carrati.lebooks.data.di
 
+import androidx.room.Room
 import com.carrati.lebooks.data.local.database.BooksDatabase
 import com.carrati.lebooks.data.local.source.IMyBooksLocalDataSource
 import com.carrati.lebooks.data.local.source.MyBooksLocalDataSourceImpl
@@ -9,7 +10,11 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val localDataModule = module {
-    single { BooksDatabase.createDataBase(androidContext()) }
+    single { Room
+            .databaseBuilder(androidContext(), BooksDatabase::class.java, "lebooks.db")
+            .build() }
+    single { get<BooksDatabase>().myBooksDAO() }
+    single { get<BooksDatabase>().bookstoreDAO() }
     factory<IMyBooksLocalDataSource> { MyBooksLocalDataSourceImpl(myBooksDao = get()) }
     factory<IBookstoreLocalDataSource> { BookstoreLocalDataSourceImpl(bookstoreDao = get()) }
 }

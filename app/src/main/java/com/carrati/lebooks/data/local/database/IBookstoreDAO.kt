@@ -1,8 +1,8 @@
 package com.carrati.lebooks.data.local.database
 
-import androidx.room.*
 import com.carrati.lebooks.data.local.model.StoreBookLocal
 import io.reactivex.Single
+import androidx.room.*
 
 @Dao
 interface IBookstoreDAO {
@@ -12,7 +12,7 @@ interface IBookstoreDAO {
 
     @Transaction
     fun updateData(books: List<StoreBookLocal>) {
-        deleteAll()
+        //deleteAll()
         insertAll(books)
     }
 
@@ -25,9 +25,9 @@ interface IBookstoreDAO {
     @Delete
     fun deleteBooks(books: List<StoreBookLocal>)
 
-    @Query("SELECT * FROM bookstore_conf WHERE title = :title AND writer = :writer")
-    fun searchBook(title: String, writer: String)
+    /*@Query("SELECT * FROM bookstore_conf WHERE title = :title AND writer = :writer")
+    fun searchBook(title: String, writer: String)*/
 
     @Update
-    fun favBook(book: StoreBookLocal)
+    fun favBook(vararg book: StoreBookLocal)
 }

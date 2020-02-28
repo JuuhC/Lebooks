@@ -19,7 +19,7 @@ class UserPreferences(private val context: Context) {
         }
 
     var nome: String
-        get() = preferences.getString(CHAVE_NOME, "altere o nome no menu acima.")
+        get() = preferences.getString(CHAVE_NOME, "altere o nome no menu acima.")!!
         set(nome) {
             editor.putString(CHAVE_NOME, nome)
             editor.commit()
