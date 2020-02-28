@@ -1,10 +1,13 @@
 package com.carrati.lebooks.domain.di
 
+import com.carrati.lebooks.domain.entities.BookMapper
 import com.carrati.lebooks.domain.usecases.*
 import io.reactivex.schedulers.Schedulers
 import org.koin.dsl.module
 
 val useCaseModule = module {
+
+    single { BookMapper }
 
     factory {
         BuyStoreBookUseCase(

@@ -1,6 +1,7 @@
 package com.carrati.lebooks.presentation.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
@@ -69,8 +70,12 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
                 }
                 is ViewState.Loading ->
                     binding.bookstoreProgressBar.visibility = ProgressBar.VISIBLE
-                is ViewState.Failed ->
+                is ViewState.Failed -> {
+                    binding.bookstoreProgressBar.visibility = ProgressBar.GONE
+                    //binding.bookstoreTryAgain.visibility = ProgressBar.VISIBLE
                     Toast.makeText(this@BookstoreActivity, "Erro ao carregar loja", Toast.LENGTH_LONG).show()
+                    Log.e("Activity", state.throwable.toString())
+                }
             }
         })
     }

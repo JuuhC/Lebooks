@@ -1,5 +1,6 @@
 package com.carrati.lebooks.data
 
+import android.util.Log
 import com.carrati.lebooks.data.local.source.IBookstoreLocalDataSource
 import com.carrati.lebooks.data.remote.source.IBookstoreRemoteDataSource
 import com.carrati.lebooks.domain.entities.StoreBook
@@ -17,8 +18,14 @@ class BookstoreRepositoryImpl(
         else
             localDataSource.getBookList().flatMap{ listBooks ->
                         when {
-                            listBooks.isEmpty() -> getBooksRemote(false)
-                            else -> Single.just(listBooks)
+                            listBooks.isEmpty() -> {
+                                Log.e("Repo", "listBooks is empty")
+                                getBooksRemote(false)
+                            }
+                            else -> {
+                                Log.e("Repo", "listBooks isn't empty")
+                                Single.just(listBooks)
+                            }
                         }
                     }
     }
@@ -27,8 +34,10 @@ class BookstoreRepositoryImpl(
         return remoteDataSource.getBooks().flatMap { listBooks ->
             if(isUpdate)
                 localDataSource.updateData( listBooks )
-            else
-                localDataSource.insertData( listBooks )
+            else {
+                Log.e("Repo", "insertData")
+                localDataSource.insertData(listBooks)
+            }
             Single.just( listBooks )
         }
     }
