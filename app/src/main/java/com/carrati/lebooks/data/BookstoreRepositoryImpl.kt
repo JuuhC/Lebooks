@@ -5,6 +5,7 @@ import com.carrati.lebooks.data.local.source.IBookstoreLocalDataSource
 import com.carrati.lebooks.data.remote.source.IBookstoreRemoteDataSource
 import com.carrati.lebooks.domain.entities.StoreBook
 import com.carrati.lebooks.domain.repository.IBookstoreRepository
+import io.reactivex.Observable
 import io.reactivex.Single
 
 class BookstoreRepositoryImpl(
@@ -23,7 +24,7 @@ class BookstoreRepositoryImpl(
                                 getBooksRemote(false)
                             }
                             else -> {
-                                Log.e("Repo", "listBooks isn't empty")
+                                Log.e("Repo", "listBooks isn't empty. Thread: " + Thread.currentThread().getName())
                                 Single.just(listBooks)
                             }
                         }
@@ -38,17 +39,15 @@ class BookstoreRepositoryImpl(
                 Log.e("Repo", "insertData")
                 localDataSource.insertData(listBooks)
             }
-            Single.just( listBooks )
+            localDataSource.getBookList()
         }
     }
 
-    override fun buyBook(book: StoreBook): Single<Boolean> {
-        localDataSource.favBook(book)
-        return Single.just(true)
+    override fun buyBook(book: StoreBook) {
+        localDataSource.buyBook(book)
     }
 
-    override fun favorBook(book: StoreBook): Single<Boolean> {
+    override fun favorBook(book: StoreBook) {
         localDataSource.favBook(book)
-        return Single.just(true)
     }
 }

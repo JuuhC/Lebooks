@@ -13,7 +13,7 @@ abstract class BooksDatabase : RoomDatabase() {
     abstract fun myBooksDAO(): IMyBooksDAO
     abstract fun bookstoreDAO(): IBookstoreDAO
 
-    /*companion object {
+    companion object {
         @Volatile
         private var INSTANCE: BooksDatabase? = null
 
@@ -22,14 +22,13 @@ abstract class BooksDatabase : RoomDatabase() {
                 return this.INSTANCE
             } else {
                 synchronized(this) {
-                    val instance = Room.databaseBuilder(
-                            context,
-                            BooksDatabase::class.java,
-                            "lebooks.db").build()
+                    val instance = Room.databaseBuilder(context, BooksDatabase::class.java,"lebooks.db")
+                            .allowMainThreadQueries()
+                            .build()
                     this.INSTANCE = instance
                     return instance
                 }
             }
         }
-    }*/
+    }
 }

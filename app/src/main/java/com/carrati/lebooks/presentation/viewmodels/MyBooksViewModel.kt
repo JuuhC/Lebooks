@@ -27,6 +27,15 @@ class MyBooksViewModel (
         value = ViewState.Loading
     }
 
+    val balanceLiveData = MutableLiveData<String>().apply {
+        var balance = displayBalanceUC.execute()
+        value = NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(balance)
+    }
+
+    val usernameLiveData = MutableLiveData<String>().apply {
+        value = "Olá, " + displayNameUC.execute()
+    }
+
     fun getMyBooks(){
         disposables += getMyBooksUC.execute()
                 .compose(StateMachineSingle())
@@ -46,6 +55,7 @@ class MyBooksViewModel (
                 .observeOn(uiScheduler)
                 .subscribe(
                         {
+                            usernameLiveData.value = "Olá, " + displayNameUC.execute()
                             stateChangeName.postValue(it)
                         },
                         {
@@ -53,16 +63,8 @@ class MyBooksViewModel (
                 )
     }
 
-    fun displayUserName(): String{
-
-        return "Olá, " + displayNameUC.execute()
-    }
-
-    fun displayBalance(): String{
-
+    fun updateBalance(){
         var balance = displayBalanceUC.execute()
-        val formatedBalance = NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(balance)
-
-        return formatedBalance
+        balanceLiveData.value = NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(balance)
     }
 }

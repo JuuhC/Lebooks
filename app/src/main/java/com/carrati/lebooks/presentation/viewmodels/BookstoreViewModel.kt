@@ -1,5 +1,6 @@
 package com.carrati.lebooks.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.carrati.lebooks.domain.entities.StoreBook
 import com.carrati.lebooks.domain.usecases.BuyStoreBookUseCase
@@ -27,14 +28,20 @@ class BookstoreViewModel(
         value = ViewState.Loading
     }
 
-    val stateBuyStoreBook = MutableLiveData<ViewState<Int>>().apply {
+    val stateBuyStoreBook = MutableLiveData<ViewState<Boolean>>().apply {
         value = ViewState.Loading
+    }
+
+    val balanceLiveData = MutableLiveData<String>().apply {
+        var balance = balanceFormat(displayBalanceUC.execute())
+        Log.e("Balance", balance)
+        value = balance
     }
 
     fun getStoreBooks(forceUpdate: Boolean = false){
         disposables += getStoreBooksUC.execute(forceUpdate = forceUpdate)
-                .compose(StateMachineSingle())
                 .observeOn(uiScheduler)
+                .compose(StateMachineSingle())
                 .subscribe(
                         {
                             stateGetStoreBooks.postValue(it)
@@ -67,6 +74,7 @@ class BookstoreViewModel(
                 .observeOn(uiScheduler)
                 .subscribe(
                         {
+                            balanceLiveData.value = balanceFormat(displayBalanceUC.execute())
                             stateBuyStoreBook.postValue(it)
                         },
                         {
@@ -74,11 +82,7 @@ class BookstoreViewModel(
                 )
     }
 
-    fun displayBalance(): String{
-
-        var balance = displayBalanceUC.execute()
-        val formatedBalance = NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(balance)
-
-        return formatedBalance
+    fun balanceFormat(balance: Int): String {
+        return NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(balance)
     }
 }

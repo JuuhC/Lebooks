@@ -11,7 +11,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
 import com.carrati.lebooks.presentation.adapters.AdapterBookstore
 import com.carrati.lebooks.domain.entities.StoreBook
 import com.carrati.lebooks.R
@@ -20,8 +22,10 @@ import com.carrati.lebooks.presentation.adapters.IRecyclerViewClickListener
 import com.carrati.lebooks.presentation.viewmodels.BookstoreViewModel
 import com.carrati.lebooks.presentation.viewmodels.ViewState
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.CancellationException
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.lang.Exception
 
 import java.util.ArrayList
 
@@ -30,7 +34,7 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
     private val booksList: MutableList<StoreBook> = mutableListOf()
 
     private val viewModel: BookstoreViewModel by viewModel()
-    private val adapter: AdapterBookstore = AdapterBookstore(booksList, this, this)
+    private val adapter: AdapterBookstore = AdapterBookstore(booksList, this, this, this)
 
     private lateinit var binding: ActivityBookstoreBinding
 
@@ -57,6 +61,7 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
         //1- limpa a lista
         //2- executa a classe que vai pegar o json e preencher a lista
 
+        binding.bookstoreProgressBar.visibility = ProgressBar.VISIBLE
         viewModel.getStoreBooks(forceUpdate)
 
         viewModel.stateGetStoreBooks.observe(this, Observer { state ->
@@ -67,6 +72,8 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
                             .sortedWith(compareByDescending<StoreBook> { it.favor }.thenBy { it.title }))
                     adapter.notifyDataSetChanged()
                     binding.bookstoreProgressBar.visibility = ProgressBar.GONE
+                    if(forceUpdate)
+                        Toast.makeText(this@BookstoreActivity, "Loja recarregada", Toast.LENGTH_LONG).show()
                 }
                 is ViewState.Loading ->
                     binding.bookstoreProgressBar.visibility = ProgressBar.VISIBLE
@@ -80,8 +87,8 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
         })
     }
 
-    override fun onClickBuyBook(book: StoreBook): Boolean {
-        var result: Boolean = false  //possivelmente esta variavel nao tera seu valor alterado :)
+    override fun onClickBuyBook(book: StoreBook): MutableLiveData<ViewState<Boolean>> {
+        var result = false  //possivelmente esta variavel nao tera seu valor alterado :)
 
         val bookThumb = ImageView(this@BookstoreActivity)
         Picasso.get().load(book.thumbURL).into(bookThumb)
@@ -92,48 +99,21 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
         builder.setView(bookThumb)
 
         builder.setPositiveButton("OK") { _, _ ->
-
             viewModel.buyStoreBook(book)
-
-            viewModel.stateBuyStoreBook.observe(this, Observer { state ->
-                when(state) {
-                    is ViewState.Success -> {
-                        Toast.makeText(this@BookstoreActivity, "Compra efetuada!", Toast.LENGTH_LONG).show()
-                        result = true
-                    }
-                    is ViewState.Loading ->
-                        Toast.makeText(this@BookstoreActivity, "Processando solicitação", Toast.LENGTH_SHORT).show()
-                    is ViewState.Failed -> {
-                        Toast.makeText(this@BookstoreActivity, "Erro ao comprar livro", Toast.LENGTH_LONG).show()
-                        result = false
-                    }
-                }
-            })
         }
-        builder.setNegativeButton("Cancelar") { _, _ -> }
+        builder.setNegativeButton("Cancelar") { _, _ ->
+            viewModel.stateBuyStoreBook.value = ViewState.Failed(CancellationException())
+        }
 
         builder.create().show()
 
-        return result
+        Log.e("activityBuyBook", result.toString())
+        return viewModel.stateBuyStoreBook
     }
 
-    override fun onClickFavBook(book: StoreBook): Boolean {
+    override fun onClickFavBook(book: StoreBook): MutableLiveData<ViewState<Boolean>> {
         viewModel.favorStoreBook(book)
-        var result: Boolean = false
-
-        viewModel.stateFavorStoreBook.observe(this, Observer { state ->
-            when(state) {
-                is ViewState.Success -> {
-                    result = true
-                }
-                is ViewState.Loading ->
-                    Toast.makeText(this@BookstoreActivity, "Processando solicitação", Toast.LENGTH_SHORT).show()
-                is ViewState.Failed -> {
-                    result = false
-                }
-            }
-        })
-        return result
+        return viewModel.stateFavorStoreBook
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

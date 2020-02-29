@@ -13,9 +13,7 @@ class BookstoreLocalDataSourceImpl(private val bookstoreDao: IBookstoreDAO): IBo
     }
 
     override fun buyBook(book: StoreBook) {
-        val list = mutableListOf<StoreBook>()
-        list.add(book)
-        bookstoreDao.deleteBooks(BookstoreLocalMapper.mapToDB(list))
+        bookstoreDao.deleteBook(BookstoreLocalMapper.mapToDB(book))
     }
 
     override fun favBook(book: StoreBook) {

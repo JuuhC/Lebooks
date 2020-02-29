@@ -10,9 +10,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val localDataModule = module {
-    single { Room
-            .databaseBuilder(androidContext(), BooksDatabase::class.java, "lebooks.db")
-            .build() }
+    single { BooksDatabase.getDatabase(androidContext()) }
     single { get<BooksDatabase>().myBooksDAO() }
     single { get<BooksDatabase>().bookstoreDAO() }
     factory<IMyBooksLocalDataSource> { MyBooksLocalDataSourceImpl(myBooksDao = get()) }

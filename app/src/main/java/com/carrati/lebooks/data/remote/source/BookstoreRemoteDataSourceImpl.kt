@@ -15,6 +15,7 @@ class BookstoreRemoteDataSourceImpl(private val serverAPI: IServerAPI): IBooksto
         } else {
             Log.e("DataSource", "fetchBooks isn't null")
         }
+        StoreBookRemoteMapper.id = 1
         return serverAPI.fetchBooks().map{ StoreBookRemoteMapper.mapFromAPI(it) }
     }
 }

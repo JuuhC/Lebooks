@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        viewModel.updateBalance()
         getBookList()
     }
 
@@ -109,13 +110,14 @@ class MainActivity : AppCompatActivity() {
 
 
         when (item.itemId) {
-            R.id.action_buy ->
+            R.id.action_buy -> {
                 //chama tela de bookstore
                 startActivity(Intent(this, BookstoreActivity::class.java))
+            }
             R.id.action_change_name ->
                 //chama popup de mudar nome
                 changeName()
-        }//getMyBooks(); ##por algum motivo não precisou
+        }
 
         return super.onOptionsItemSelected(item)
     }
