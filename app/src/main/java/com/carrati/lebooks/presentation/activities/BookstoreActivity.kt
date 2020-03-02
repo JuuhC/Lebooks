@@ -57,15 +57,6 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
 
     override fun onStart() {
         super.onStart()
-        getBookList(false)
-    }
-
-    fun getBookList(forceUpdate: Boolean) {
-        //1- limpa a lista
-        //2- executa a classe que vai pegar o json e preencher a lista
-
-        binding.bookstoreProgressBar.visibility = ProgressBar.VISIBLE
-        viewModel.getStoreBooks(forceUpdate)
 
         viewModel.stateGetStoreBooks.observe(this, Observer { state ->
             when(state) {
@@ -74,20 +65,34 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
                     booksList.addAll(state.data
                             .sortedWith(compareByDescending<StoreBook> { it.favor }.thenBy { it.title }))
                     adapter.notifyDataSetChanged()
+
                     binding.bookstoreProgressBar.visibility = ProgressBar.GONE
-                    if(forceUpdate)
-                        Toast.makeText(this@BookstoreActivity, "Loja recarregada", Toast.LENGTH_LONG).show()
+                    //Log.e("Activity", state.data.toString())
                 }
+
                 is ViewState.Loading ->
                     binding.bookstoreProgressBar.visibility = ProgressBar.VISIBLE
+
                 is ViewState.Failed -> {
                     binding.bookstoreProgressBar.visibility = ProgressBar.GONE
-                    //binding.bookstoreTryAgain.visibility = ProgressBar.VISIBLE
-                    Toast.makeText(this@BookstoreActivity, "Erro ao carregar loja", Toast.LENGTH_LONG).show()
+
+                    Toast.makeText(this@BookstoreActivity, "Erro ao carregar loja", Toast.LENGTH_SHORT).show()
+
                     Log.e("Activity", state.throwable.toString())
                 }
             }
         })
+
+        getBookList(false)
+    }
+
+    fun getBookList(forceUpdate: Boolean) {
+        //1- limpa a lista
+        //2- executa a classe que vai pegar o json e preencher a lista
+
+        Log.e("ActivityForceUpdate", forceUpdate.toString())
+        binding.bookstoreProgressBar.visibility = ProgressBar.VISIBLE
+        viewModel.getStoreBooks(forceUpdate)
     }
 
     override fun onClickBuyBook(book: StoreBook): MutableLiveData<ViewState<Boolean>> {

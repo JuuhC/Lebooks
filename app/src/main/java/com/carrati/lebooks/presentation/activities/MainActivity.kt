@@ -52,13 +52,6 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         viewModel.updateBalance()
         getBookList()
-    }
-
-    fun getBookList() {
-        //1- limpa a lista
-        //2- executa a classe que vai pegar do banco e preenche a lista
-
-        viewModel.getMyBooks()
 
         viewModel.stateGetMyBooks.observe(this, Observer { state ->
             when(state) {
@@ -75,6 +68,13 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, "Erro ao carregar livros", Toast.LENGTH_LONG).show()
             }
         })
+    }
+
+    fun getBookList() {
+        //1- limpa a lista
+        //2- executa a classe que vai pegar do banco e preenche a lista
+
+        viewModel.getMyBooks()
     }
 
     //#### OK

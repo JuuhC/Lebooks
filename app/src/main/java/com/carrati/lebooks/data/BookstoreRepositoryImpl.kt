@@ -32,11 +32,11 @@ class BookstoreRepositoryImpl(
     }
 
     private fun getBooksRemote(isUpdate: Boolean): Single<List<StoreBook>> {
+        Log.e("Repo", "getBooksRemote")
         return remoteDataSource.getBooks().flatMap { listBooks ->
             if(isUpdate)
                 localDataSource.updateData( listBooks )
             else {
-                Log.e("Repo", "insertData")
                 localDataSource.insertData(listBooks)
             }
             localDataSource.getBookList()

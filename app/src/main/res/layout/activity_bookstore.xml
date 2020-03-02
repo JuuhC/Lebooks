@@ -69,18 +69,6 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <Button
-                android:id="@+id/bookstoreTryAgain"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/design_default_color_background"
-                android:text="@string/try_again"
-                android:textAllCaps="true"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:onClick="@{() -> viewModel.onTryAgainOrReload()}"
-                android:visibility="gone"/>
-
             <ProgressBar
                 android:id="@+id/bookstoreProgressBar"
                 android:layout_width="match_parent"
