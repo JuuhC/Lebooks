@@ -46,6 +46,9 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
         binding.bookstoreToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material)
         binding.bookstoreToolbar.setNavigationOnClickListener { finish() }
 
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
+
         val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         binding.bookstoreList.layoutManager = layoutManager
         binding.bookstoreList.setHasFixedSize(true)
