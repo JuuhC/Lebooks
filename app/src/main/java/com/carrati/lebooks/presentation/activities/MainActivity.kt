@@ -46,6 +46,10 @@ class MainActivity : AppCompatActivity() {
 
         //preferences?.cleanPreferences();
         //myBooksDAO.cleanAllBooks();
+
+        binding.bookstoreFab.setOnClickListener {
+            startActivity(Intent(this, BookstoreActivity::class.java))
+        }
     }
 
     override fun onStart() {
