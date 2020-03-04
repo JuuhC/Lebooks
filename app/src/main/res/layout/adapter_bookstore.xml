@@ -61,6 +61,15 @@
 
         </LinearLayout>
 
+        <ImageButton
+            android:id="@+id/bookstoreAdapterFav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            android:contentDescription="@string/fav_descr"
+            app:srcCompat="@android:drawable/btn_star_big_off" />
+
         <Button
             android:id="@+id/bookstoreAdapterComprar"
             android:layout_width="wrap_content"

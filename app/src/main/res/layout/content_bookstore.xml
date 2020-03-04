@@ -40,6 +40,12 @@
             android:textSize="14sp" />
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/bookstoreProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:visibility="gone" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/bookstoreList"
         android:layout_width="match_parent"
