@@ -7,32 +7,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 
 import com.carrati.lebooks.R
-import com.carrati.lebooks.databinding.AdapterBookstoreBinding
 import com.carrati.lebooks.domain.entities.StoreBook
-import com.carrati.lebooks.presentation.activities.BookstoreActivity
-import com.carrati.lebooks.presentation.viewmodels.BookstoreViewModel
 import com.carrati.lebooks.presentation.viewmodels.ViewState
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.squareup.picasso.Picasso
 
 //um adapter com listener para button
-class AdapterBookstore(private val books: MutableList<StoreBook>,
+class AdapterBookstore(private var books: List<StoreBook>,
                        private val onClickListenerRV: IRecyclerViewClickListener,
                        private val context: Context,
                        private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<AdapterBookstore.MyViewHolder>() {
 
-    /*override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val itemLista: AdapterBookstoreBinding = DataBindingUtil.inflate(
-                LayoutInflater.from(parent.context), R.layout.adapter_bookstore, parent, false)
-        return MyViewHolder(itemLista)
-    }*/
+    private val mutableBooks = mutableListOf<StoreBook>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemLista = LayoutInflater.from(parent.context).inflate(R.layout.adapter_bookstore, parent, false)
@@ -41,7 +32,9 @@ class AdapterBookstore(private val books: MutableList<StoreBook>,
 
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val book = books[position]
+        if(mutableBooks.isEmpty()) return
+
+        val book = mutableBooks[position]
 
         holder.titulo.text = book.title
         holder.autor.text = book.writer
@@ -55,7 +48,7 @@ class AdapterBookstore(private val books: MutableList<StoreBook>,
                 when(state) {
                     is ViewState.Success -> {
                         if(state.data == true) {
-                            books.remove(book)
+                            mutableBooks.remove(book)
                             notifyDataSetChanged()
                             Toast.makeText(context, "Compra efetuada!", Toast.LENGTH_LONG).show()
                         } else {
@@ -74,7 +67,7 @@ class AdapterBookstore(private val books: MutableList<StoreBook>,
             stateFavBook.observe(lifecycleOwner, Observer { state ->
                 when(state) {
                     is ViewState.Success -> {
-                        books.sortWith(compareByDescending<StoreBook>{ it.favor }.thenBy{ it.title })
+                        mutableBooks.sortWith(compareByDescending<StoreBook>{ it.favor }.thenBy{ it.title })
                         notifyDataSetChanged()
 
                         if(book.favor)
@@ -111,15 +104,38 @@ class AdapterBookstore(private val books: MutableList<StoreBook>,
 
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-        //tirei o private mas deveria coloca outra coisa?
-        //private val listenerRefBuyBook: WeakReference<IRecyclerViewBuyBookClickListener> = WeakReference(onClickListenerBuyBook)
-
-        //não precisava do init
         val titulo = itemView.findViewById<TextView>(R.id.bookstoreAdapterTitulo)
         val autor = itemView.findViewById<TextView>(R.id.bookstoreAdapterAutor)
         val thumb = itemView.findViewById<ImageView>(R.id.bookstoreAdapterThumb)
         val valor = itemView.findViewById<TextView>(R.id.bookstoreAdapterValor)
         val comprar = itemView.findViewById<Button>(R.id.bookstoreAdapterComprar)
         val favorito = itemView.findViewById<ImageButton>(R.id.bookstoreAdapterFav)
+    }
+
+    fun updateAllItens(list: List<StoreBook>){
+        mutableBooks.apply {
+            clear()
+            addAll(list)
+            sortWith(compareByDescending<StoreBook>{ it.favor }.thenBy{ it.title })
+        }
+        this.books = list
+        notifyDataSetChanged()
+    }
+
+    fun searchBook(text: String){
+        mutableBooks.removeAll { true }
+
+        for (book in books){
+            if(text == ""){
+                mutableBooks.add(book)
+            } else if(book.title.contains(text, ignoreCase = true) ||
+                      book.writer.contains(text, ignoreCase = true)) {
+                mutableBooks.add(book)
+            }
+        }
+
+        Log.e("adapterBookstore", mutableBooks.size.toString())
+        mutableBooks.sortWith(compareByDescending<StoreBook>{ it.favor }.thenBy{ it.title })
+        notifyDataSetChanged()
     }
 }

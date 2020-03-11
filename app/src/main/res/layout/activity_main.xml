@@ -98,7 +98,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_adicionar_branco_24dp" />
+            app:srcCompat="@drawable/ic_shopping_cart"
+            app:fabCustomSize="70dp"
+            app:maxImageSize="35dp"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

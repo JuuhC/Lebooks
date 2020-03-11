@@ -31,17 +31,17 @@ import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CancellationException
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 import java.lang.Exception
 
 import java.util.ArrayList
 
 class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
 
-    private val booksList: MutableList<StoreBook> = mutableListOf()
     private var searchingFlag = false
 
     private val viewModel: BookstoreViewModel by viewModel()
-    private val adapter: AdapterBookstore = AdapterBookstore(booksList, this, this, this)
+    private var adapter: AdapterBookstore? = null
 
     private lateinit var binding: ActivityBookstoreBinding
 
@@ -55,11 +55,7 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
-
-        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        binding.bookstoreList.layoutManager = layoutManager
-        binding.bookstoreList.setHasFixedSize(true)
-        binding.bookstoreList.adapter = adapter
+        initAdapter(listOf())
     }
 
     override fun onStart() {
@@ -68,11 +64,7 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
         viewModel.stateGetStoreBooks.observe(this, Observer { state ->
             when(state) {
                 is ViewState.Success -> {
-                    booksList.clear()
-                    booksList.addAll(state.data
-                            .sortedWith(compareByDescending<StoreBook> { it.favor }.thenBy { it.title }))
-                    adapter.notifyDataSetChanged()
-
+                    initAdapter(state.data)
                     binding.bookstoreProgressBar.visibility = ProgressBar.GONE
                     //Log.e("Activity", state.data.toString())
                 }
@@ -91,15 +83,29 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
         })
 
         getBookList(false)
+        initSearchBox()
     }
 
     fun getBookList(forceUpdate: Boolean) {
         //1- limpa a lista
         //2- executa a classe que vai pegar o json e preencher a lista
 
-        Log.e("ActivityForceUpdate", forceUpdate.toString())
+        Timber.e(forceUpdate.toString())
         binding.bookstoreProgressBar.visibility = ProgressBar.VISIBLE
         viewModel.getStoreBooks(forceUpdate)
+    }
+
+    fun initAdapter(list: List<StoreBook>){
+        if(adapter == null){
+            val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+            binding.bookstoreList.layoutManager = layoutManager
+            binding.bookstoreList.setHasFixedSize(true)
+
+            adapter = AdapterBookstore(list, this, applicationContext, this)
+            binding.bookstoreList.adapter = adapter
+        } else {
+            adapter!!.updateAllItens(list)
+        }
     }
 
     fun initSearchBox(){
@@ -112,7 +118,7 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
         searchTxt.addTextChangedListener( object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 
-                //adapter.applySearch(searchTxt.text.toString())
+                adapter?.searchBook(searchTxt.text.toString())
 
                 if(searchTxt.text.isNotEmpty()){
                     searchImg.setBackgroundResource(R.drawable.ic_cancel_gray)
