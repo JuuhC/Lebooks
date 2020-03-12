@@ -9,7 +9,6 @@ import io.reactivex.Single
 class BookstoreRemoteDataSourceImpl(private val serverAPI: IServerAPI): IBookstoreRemoteDataSource {
 
     override fun getBooks(): Single<List<StoreBook>> {
-        serverAPI.fetchBooks()
         StoreBookRemoteMapper.id = 1
         return serverAPI.fetchBooks().map{ StoreBookRemoteMapper.mapFromAPI(it) }
     }

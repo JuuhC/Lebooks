@@ -60,6 +60,14 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
     override fun onStart() {
         super.onStart()
 
+        getBookList(false)
+        initSearchBox()
+    }
+
+    fun getBookList(forceUpdate: Boolean) {
+        //1- limpa a lista
+        //2- executa a classe que vai pegar o json e preencher a lista
+
         viewModel.stateGetStoreBooks.observe(this, Observer { state ->
             when(state) {
                 is ViewState.Success -> {
@@ -80,14 +88,6 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
                 }
             }
         })
-
-        getBookList(false)
-        initSearchBox()
-    }
-
-    fun getBookList(forceUpdate: Boolean) {
-        //1- limpa a lista
-        //2- executa a classe que vai pegar o json e preencher a lista
 
         Timber.e(forceUpdate.toString())
         binding.bookstoreProgressBar.visibility = ProgressBar.VISIBLE
