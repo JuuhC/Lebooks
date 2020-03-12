@@ -19,7 +19,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.carrati.lebooks.presentation.adapters.AdapterBookstore
 import com.carrati.lebooks.domain.entities.StoreBook
 import com.carrati.lebooks.R
@@ -32,7 +32,6 @@ import kotlinx.coroutines.CancellationException
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import java.lang.Exception
 
 import java.util.ArrayList
 
@@ -97,7 +96,8 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
 
     fun initAdapter(list: List<StoreBook>){
         if(adapter == null){
-            val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+            val layoutManager = LinearLayoutManager(this)
+            layoutManager.orientation = LinearLayoutManager.VERTICAL
             binding.bookstoreList.layoutManager = layoutManager
             binding.bookstoreList.setHasFixedSize(true)
 
@@ -155,8 +155,6 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
     }
 
     override fun onClickBuyBook(book: StoreBook): MutableLiveData<ViewState<Boolean>> {
-        var result = false  //possivelmente esta variavel nao tera seu valor alterado :)
-
         val bookThumb = ImageView(this@BookstoreActivity)
         Picasso.get().load(book.thumbURL).into(bookThumb)
 
@@ -174,7 +172,6 @@ class BookstoreActivity : AppCompatActivity(), IRecyclerViewClickListener {
 
         builder.create().show()
 
-        Log.e("activityBuyBook", result.toString())
         return viewModel.stateBuyStoreBook
     }
 

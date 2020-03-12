@@ -32,7 +32,6 @@ class AdapterBookstore(private var books: List<StoreBook>,
 
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        if(mutableBooks.isEmpty()) return
 
         val book = mutableBooks[position]
 
@@ -97,9 +96,10 @@ class AdapterBookstore(private var books: List<StoreBook>,
 
     }
 
-
+    /////CARA$%#
+    //é aqui que ele define qual lista ele vai usar no onBind
     override fun getItemCount(): Int {
-        return books.size
+        return mutableBooks.size
     }
 
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
@@ -123,10 +123,10 @@ class AdapterBookstore(private var books: List<StoreBook>,
     }
 
     fun searchBook(text: String){
-        mutableBooks.removeAll { true }
+        mutableBooks.clear()
 
         for (book in books){
-            if(text == ""){
+            if(text.isBlank()){
                 mutableBooks.add(book)
             } else if(book.title.contains(text, ignoreCase = true) ||
                       book.writer.contains(text, ignoreCase = true)) {
@@ -134,7 +134,6 @@ class AdapterBookstore(private var books: List<StoreBook>,
             }
         }
 
-        Log.e("adapterBookstore", mutableBooks.size.toString())
         mutableBooks.sortWith(compareByDescending<StoreBook>{ it.favor }.thenBy{ it.title })
         notifyDataSetChanged()
     }
