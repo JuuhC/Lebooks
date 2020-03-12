@@ -2,13 +2,12 @@ package com.carrati.lebooks.presentation.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -19,6 +18,7 @@ import com.carrati.lebooks.databinding.ActivityMainBinding
 import com.carrati.lebooks.domain.entities.MyBook
 import com.carrati.lebooks.presentation.viewmodels.MyBooksViewModel
 import com.carrati.lebooks.presentation.viewmodels.ViewState
+import kotlinx.android.synthetic.main.change_name.view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -83,18 +83,19 @@ class MainActivity : AppCompatActivity() {
 
     //#### OK
     fun changeName() { //cria uma janelinha pro usuario inserir o novo nome
-        val newName = EditText(this@MainActivity)
-        newName.setPadding(30, 20, 30, 20)
+        val view = LayoutInflater.from(this).inflate(R.layout.change_name, null)
         val alertDialog = AlertDialog.Builder(this@MainActivity)
         alertDialog.setTitle("Mudar Nome")
         alertDialog.setMessage("Insira novo nome de usuário:")
         alertDialog.setCancelable(true)
-        alertDialog.setView(newName)
+        alertDialog.setView(view)
 
         alertDialog.setPositiveButton("OK") { _, _ ->
             //atualiza o shared preferences e a mainHello
-            viewModel.changeUserName(newName.text.toString())
+            viewModel.changeUserName(view.newName.text.toString())
         }
+
+        alertDialog.setNegativeButton("Cancelar") {_, _ -> }
 
         alertDialog.show()
     }
