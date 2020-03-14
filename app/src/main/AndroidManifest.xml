@@ -6,9 +6,9 @@
     <application
         android:name=".MyModuleApplication"
         android:allowBackup="true"
-        android:icon="@drawable/book_icon"
+        android:icon="@drawable/book_icon5"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/book_icon"
+        android:roundIcon="@drawable/book_icon5"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
