@@ -75,8 +75,6 @@ class AdapterBookstore(private var books: List<StoreBook>,
                         else
                             holder.favorito.setImageDrawable(
                                     ContextCompat.getDrawable(context, android.R.drawable.btn_star_big_off))
-
-                        Toast.makeText(context,"Livro favoritado: " + book.title, Toast.LENGTH_SHORT).show()
                     }
                     is ViewState.Failed -> {
                         Toast.makeText(context,"Erro ao favoritar livro: " + book.title, Toast.LENGTH_SHORT).show()
