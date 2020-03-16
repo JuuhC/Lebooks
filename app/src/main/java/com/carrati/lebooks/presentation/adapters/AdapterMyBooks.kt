@@ -29,7 +29,7 @@ class AdapterMyBooks(private val books: MutableList<MyBook>)//um adapter comum
         //holder.thumb.setImageDrawable(book.getThumb(book.getThumbURL()));
         Picasso.get().load(book.thumbURL).into(holder.thumb)
 
-        Log.i("myBooksAdapter", book.title)
+        //Log.i("myBooksAdapter", book.title)
     }
 
 

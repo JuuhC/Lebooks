@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:maxWidth="90dp"
+                android:maxWidth="70dp"
                 android:maxHeight="90dp"
                 app:srcCompat="@android:color/darker_gray"
                 tools:srcCompat="@drawable/book_icon"
@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:layout_weight="5"
+                android:layout_weight="10"
                 android:orientation="vertical">
 
                 <TextView
@@ -67,7 +67,8 @@
                 android:id="@+id/bookstoreAdapterFav"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:layout_weight="0"
                 android:background="#00FFFFFF"
                 android:contentDescription="@string/fav_descr"
                 app:srcCompat="@android:drawable/btn_star_big_off" />

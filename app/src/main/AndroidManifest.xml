@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.carrati.lebooks">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name=".MyModuleApplication"
         android:allowBackup="true"
-        android:icon="@drawable/book_icon"
+        android:icon="@drawable/book_icon5"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/book_icon"
+        android:roundIcon="@drawable/book_icon5"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".presentation.activities.MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".presentation.activities.BookstoreActivity"
-            android:label="@string/bookstore"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/bookstore"/>
     </application>
 
 </manifest>

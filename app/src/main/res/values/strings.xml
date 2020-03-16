@@ -16,4 +16,5 @@
     <string name="fav_descr">Botão de favoritar</string>
     <string name="base_url">https://raw.githubusercontent.com/Felcks/desafio-mobile-lemobs/master/</string>
     <string name="try_again">Tentar novamente</string>
+    <string name="search_hint">Procurar livro por nome</string>
 </resources>
